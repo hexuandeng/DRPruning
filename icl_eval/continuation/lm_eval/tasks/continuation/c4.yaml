@@ -1,0 +1,4 @@
+task: c4_continuation
+dataset_kwargs: 
+  data_files: continuation/c4_continuation.jsonl
+include: continuation

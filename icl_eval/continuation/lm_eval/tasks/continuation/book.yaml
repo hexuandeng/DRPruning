@@ -1,0 +1,4 @@
+task: book_continuation
+dataset_kwargs: 
+  data_files: continuation/book_continuation.jsonl
+include: continuation

@@ -1,0 +1,4 @@
+task: wikipedia_continuation
+dataset_kwargs: 
+  data_files: continuation/wikipedia_continuation.jsonl
+include: continuation

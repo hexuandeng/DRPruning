@@ -1,0 +1,4 @@
+task: github_continuation
+dataset_kwargs: 
+  data_files: continuation/github_continuation.jsonl
+include: continuation

@@ -1,0 +1,4 @@
+task: common_crawl_continuation
+dataset_kwargs: 
+  data_files: continuation/common_crawl_continuation.jsonl
+include: continuation
