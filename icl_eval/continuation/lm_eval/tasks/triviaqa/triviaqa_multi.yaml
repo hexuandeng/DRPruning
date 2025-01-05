@@ -1,0 +1,22 @@
+group: triviaqa_multi
+task:
+  - task: triviaqa-0
+    task_alias: prompt-0
+    include: default.yaml
+    doc_to_text: "Question: {{question}}?\nAnswer:"
+  - task: triviaqa-1
+    task_alias: prompt-1
+    include: default.yaml
+    doc_to_text: "Question: {{question}}?\n\nWhat is the correct answer to the question?\nAnswer:"
+  - task: triviaqa-2
+    task_alias: prompt-2
+    include: default.yaml
+    doc_to_text: "Answer the question\n\n{{question}}?\n\nAnswer:"
+  - task: triviaqa-3
+    task_alias: prompt-3
+    include: default.yaml
+    doc_to_text: "Please respond to the following question:\n{{question}}?\n\nResponse:"
+  - task: triviaqa-4
+    task_alias: prompt-4
+    include: default.yaml
+    doc_to_text: "Please answer the following:\n{{question}}?\nAnswer:"

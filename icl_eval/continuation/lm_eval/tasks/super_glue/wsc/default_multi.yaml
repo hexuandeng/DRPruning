@@ -1,0 +1,22 @@
+group: wsc_multi
+task:
+  - task: wsc-0
+    task_alias: prompt-0
+    include: default.yaml
+    doc_to_text: !function preprocess_wsc.default_doc_to_text
+  - task: wsc-1
+    task_alias: prompt-1
+    include: default.yaml
+    doc_to_text: !function preprocess_wsc.doc_to_text1
+  - task: wsc-2
+    task_alias: prompt-2
+    include: default.yaml
+    doc_to_text: !function preprocess_wsc.doc_to_text2
+  - task: wsc-3
+    task_alias: prompt-3
+    include: default.yaml
+    doc_to_text: !function preprocess_wsc.doc_to_text3
+  - task: wsc-4
+    task_alias: prompt-4
+    include: default.yaml
+    doc_to_text: !function preprocess_wsc.doc_to_text4

@@ -1,0 +1,22 @@
+group: nq_open_multi
+task:
+  - task: nq_open-0
+    task_alias: prompt-0
+    include: nq_open.yaml
+    doc_to_text: "Q: {{question}}?\nA:"
+  - task: nq_open-1
+    task_alias: prompt-1
+    include: nq_open.yaml
+    doc_to_text: "Question: {{question}}\n\nWhat is the correct answer to the question?\nAnswer:"
+  - task: nq_open-2
+    task_alias: prompt-2
+    include: nq_open.yaml
+    doc_to_text: "Answer the question\n\n{{question}}\n\nAnswer:"
+  - task: nq_open-3
+    task_alias: prompt-3
+    include: nq_open.yaml
+    doc_to_text: "Please respond to the following question:\n{{question}}\n\nResponse:"
+  - task: nq_open-4
+    task_alias: prompt-4
+    include: nq_open.yaml
+    doc_to_text: "Please answer the following:\n{{question}}\nAnswer:"

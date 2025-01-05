@@ -1,0 +1,27 @@
+group: arc_challenge_multi
+task:
+  - task: arc_challenge-0
+    task_alias: prompt-0
+    include: arc_challenge.yaml
+    doc_to_text: "Question: {{question}}\nAnswer:"
+    doc_to_decontamination_query: "Question: {{question}}\nAnswer:"
+  - task: arc_challenge-1
+    task_alias: prompt-1
+    include: arc_challenge.yaml
+    doc_to_text: "Answer the question\n\n{{question}}\n\nAnswer:"
+    doc_to_decontamination_query: "Answer the question\n\n{{question}}\n\nAnswer:"
+  - task: arc_challenge-2
+    task_alias: prompt-2
+    include: arc_challenge.yaml
+    doc_to_text: "Please respond to the following question:\n{{question}}\n\nResponse:"
+    doc_to_decontamination_query: "Please respond to the following question:\n{{question}}\n\nResponse:"
+  - task: arc_challenge-3
+    task_alias: prompt-3
+    include: arc_challenge.yaml
+    doc_to_text: "Question:\n{{question}}\nProvide your answer:"
+    doc_to_decontamination_query: "Question:\n{{question}}\nProvide your answer:"
+  - task: arc_challenge-4
+    task_alias: prompt-4
+    include: arc_challenge.yaml
+    doc_to_text: "Analyze the question below and provide an answer:\n{{question}}\nAnswer:"
+    doc_to_decontamination_query: "Analyze the question below and provide an answer:\n{{question}}\nAnswer:"

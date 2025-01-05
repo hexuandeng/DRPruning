@@ -1,0 +1,22 @@
+group: boolq_multi
+task:
+  - task: boolq-0
+    task_alias: prompt-0
+    include: default.yaml
+    doc_to_text: "{{passage}}\nQuestion: {{question}}?\nAnswer:"
+  - task: boolq-1
+    task_alias: prompt-1
+    include: default.yaml
+    doc_to_text: "{{passage}}\nQuestion: {{question}}?\nA:"
+  - task: boolq-2
+    task_alias: prompt-2
+    include: default.yaml
+    doc_to_text: "{{passage}}\nAnswer the question\n\n{{question}}?\n\nAnswer:"
+  - task: boolq-3
+    task_alias: prompt-3
+    include: default.yaml
+    doc_to_text: "Passage:\n{{passage}}\n\nPlease answer the following question:\n{{question}}?\nA:"
+  - task: boolq-4
+    task_alias: prompt-4
+    include: default.yaml
+    doc_to_text: "{{passage}}\n\nCan you answer this question?\n{{question}}?\nAnswer:"

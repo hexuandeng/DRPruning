@@ -1,0 +1,61 @@
+"include": "_default_template_yaml"
+"group": "mmlu_clinical_knowledge_multi"
+"group_alias": "other"
+"task":
+- "task": "mmlu_clinical_knowledge-0"
+  "task_alias": "prompt-0"
+  "dataset_name": "clinical_knowledge"
+  "include": "_default_template_yaml"
+  "doc_to_text": "Q: {{question.strip()}}\n(A) {{choices[0]}} (B) {{choices[1]}} (C)\
+    \ {{choices[2]}} (D) {{choices[3]}}\nA: "
+  "doc_to_choice":
+  - "(A)"
+  - "(B)"
+  - "(C)"
+  - "(D)"
+- "task": "mmlu_clinical_knowledge-1"
+  "task_alias": "prompt-1"
+  "dataset_name": "clinical_knowledge"
+  "include": "_default_template_yaml"
+  "doc_to_text": "Please provide the correct answer to the math problem below:\n{{question.strip()}}\n\
+    A. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer: "
+  "doc_to_choice":
+  - "A"
+  - "B"
+  - "C"
+  - "D"
+- "task": "mmlu_clinical_knowledge-2"
+  "task_alias": "prompt-2"
+  "dataset_name": "clinical_knowledge"
+  "include": "_default_template_yaml"
+  "doc_to_text": "Math Problem:\n{{question.strip()}}\n\nChoose the correct option:\n\
+    A) {{choices[0]}}\nB) {{choices[1]}}\nC) {{choices[2]}}\nD) {{choices[3]}}\nAnswer: "
+  "doc_to_choice":
+  - "A"
+  - "B"
+  - "C"
+  - "D"
+- "task": "mmlu_clinical_knowledge-3"
+  "task_alias": "prompt-3"
+  "dataset_name": "clinical_knowledge"
+  "include": "_default_template_yaml"
+  "doc_to_text": "Determine the solution to the following:\n{{question.strip()}}\n\
+    A. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer: "
+  "doc_to_choice":
+  - "A"
+  - "B"
+  - "C"
+  - "D"
+- "task": "mmlu_clinical_knowledge-4"
+  "task_alias": "prompt-4"
+  "dataset_name": "clinical_knowledge"
+  "include": "_default_template_yaml"
+  "doc_to_text": "What is the correct answer to the following question?\n{{question.strip()}}\n\
+    A. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\nAnswer: "
+  "doc_to_choice":
+  - "A"
+  - "B"
+  - "C"
+  - "D"
+"description": "The following are multiple choice questions (with answers) about clinical\
+  \ knowledge.\n\n"

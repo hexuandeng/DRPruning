@@ -1,0 +1,12 @@
+group: squadv2_multi
+task:
+  - task: squadv2-0
+    class: !function task.SQuAD2
+  - task: squadv2-1
+    class: !function task.SQuAD2Prompt1
+  - task: squadv2-2
+    class: !function task.SQuAD2Prompt2
+  - task: squadv2-3
+    class: !function task.SQuAD2Prompt3
+  - task: squadv2-4
+    class: !function task.SQuAD2Prompt4

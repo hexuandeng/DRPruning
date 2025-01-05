@@ -1,0 +1,26 @@
+group: winogrande_multi
+task:
+  - task: winogrande-0
+    task_alias: prompt-0
+    include: default.yaml
+    doc_to_choice: !function preprocess_winogrande.doc_to_choice
+
+  - task: winogrande-1
+    task_alias: prompt-1
+    include: default.yaml
+    doc_to_choice: !function preprocess_winogrande.doc_to_choice1
+
+  - task: winogrande-2
+    task_alias: prompt-2
+    include: default.yaml
+    doc_to_choice: !function preprocess_winogrande.doc_to_choice2
+
+  - task: winogrande-3
+    task_alias: prompt-3
+    include: default.yaml
+    doc_to_choice: !function preprocess_winogrande.doc_to_choice3
+
+  - task: winogrande-4
+    task_alias: prompt-4
+    include: default.yaml
+    doc_to_choice: !function preprocess_winogrande.doc_to_choice4

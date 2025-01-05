@@ -1,0 +1,22 @@
+group: piqa_multi
+task:
+  - task: piqa-0
+    task_alias: prompt-0
+    include: piqa.yaml
+    doc_to_text: "Question: {{goal}}\nAnswer:"
+  - task: piqa-1
+    task_alias: prompt-1
+    include: piqa.yaml
+    doc_to_text: "Question: {{goal}}\n\nWhat is the correct answer to the question?\nAnswer:"
+  - task: piqa-2
+    task_alias: prompt-2
+    include: piqa.yaml
+    doc_to_text: "Answer the question\n\n{{goal}}\n\nAnswer:"
+  - task: piqa-3
+    task_alias: prompt-3
+    include: piqa.yaml
+    doc_to_text: "Please respond to the following question:\n{{goal}}\n\nResponse:"
+  - task: piqa-4
+    task_alias: prompt-4
+    include: piqa.yaml
+    doc_to_text: "Please answer the following:\n{{goal}}\nAnswer:"

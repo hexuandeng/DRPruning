@@ -1,0 +1,22 @@
+group: hellaswag_multi
+task:
+  - task: hellaswag-0
+    task_alias: prompt-0
+    include: hellaswag.yaml
+    doc_to_text: "{{query}}"
+  - task: hellaswag-1
+    task_alias: prompt-1
+    include: hellaswag.yaml
+    doc_to_text: "Continue the narrative below:\n{{query}}"
+  - task: hellaswag-2
+    task_alias: prompt-2
+    include: hellaswag.yaml
+    doc_to_text: "Provide a logical continuation for the text below:\n{{query}}"
+  - task: hellaswag-3
+    task_alias: prompt-3
+    include: hellaswag.yaml
+    doc_to_text: "Extend the following scenario:\n{{query}}"
+  - task: hellaswag-4
+    task_alias: prompt-4
+    include: hellaswag.yaml
+    doc_to_text: "Please carry on with the next part of the story:\n{{query}}"

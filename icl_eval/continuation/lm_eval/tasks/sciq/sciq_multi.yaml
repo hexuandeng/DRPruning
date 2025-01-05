@@ -1,0 +1,22 @@
+group: sciq_multi
+task:
+  - task: sciq-0
+    task_alias: prompt-0
+    include: sciq.yaml
+    doc_to_text: "{{support.lstrip()}}\nQuestion: {{question}}\nAnswer:"
+  - task: sciq-1
+    task_alias: prompt-1
+    include: sciq.yaml
+    doc_to_text: "{{support.lstrip()}}\nQuestion: {{question}}\n\nWhat is the correct answer to the question?\nAnswer:"
+  - task: sciq-2
+    task_alias: prompt-2
+    include: sciq.yaml
+    doc_to_text: "{{support.lstrip()}}\nAnswer the question\n\n{{question}}\n\nAnswer:"
+  - task: sciq-3
+    task_alias: prompt-3
+    include: sciq.yaml
+    doc_to_text: "{{support.lstrip()}}\nPlease respond to the following question:\n{{question}}\n\nResponse:"
+  - task: sciq-4
+    task_alias: prompt-4
+    include: sciq.yaml
+    doc_to_text: "{{support.lstrip()}}\nPlease answer the following:\n{{question}}\nAnswer:"

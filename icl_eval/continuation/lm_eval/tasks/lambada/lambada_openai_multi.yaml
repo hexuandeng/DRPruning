@@ -1,0 +1,27 @@
+group: lambada_openai_multi
+task:
+  - task: lambada_openai-0
+    task_alias: prompt-0
+    include: lambada_openai.yaml
+    doc_to_text: "{{text.split(' ')[:-1]|join(' ')}}"
+    doc_to_decontamination_query: "{{text}}"
+  - task: lambada_openai-1
+    task_alias: prompt-1
+    include: lambada_openai.yaml
+    doc_to_text: "Continue the narrative below:\n{{text.split(' ')[:-1]|join(' ')}}"
+    doc_to_decontamination_query: "Continue the narrative below:\n{{text}}"
+  - task: lambada_openai-2
+    task_alias: prompt-2
+    include: lambada_openai.yaml
+    doc_to_text: "Provide a logical continuation for the text below:\n{{text.split(' ')[:-1]|join(' ')}}"
+    doc_to_decontamination_query: "Provide a logical continuation for the text below:\n{{text}}"
+  - task: lambada_openai-3
+    task_alias: prompt-3
+    include: lambada_openai.yaml
+    doc_to_text: "Extend the following scenario:\n{{text.split(' ')[:-1]|join(' ')}}"
+    doc_to_decontamination_query: "Extend the following scenario:\n{{text}}"
+  - task: lambada_openai-4
+    task_alias: prompt-4
+    include: lambada_openai.yaml
+    doc_to_text: "Please carry on with the next part of the story:\n{{text.split(' ')[:-1]|join(' ')}}"
+    doc_to_decontamination_query: "Please carry on with the next part of the story:\n{{text}}"

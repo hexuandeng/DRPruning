@@ -1,0 +1,22 @@
+group: logiqa_multi
+task:
+  - task: logiqa-0
+    task_alias: prompt-0
+    include: logiqa.yaml
+    doc_to_text: !function utils_logiqa.doc_to_text
+  - task: logiqa-1
+    task_alias: prompt-1
+    include: logiqa.yaml
+    doc_to_text: !function utils_logiqa.doc_to_text_1
+  - task: logiqa-2
+    task_alias: prompt-2
+    include: logiqa.yaml
+    doc_to_text: !function utils_logiqa.doc_to_text_2
+  - task: logiqa-3
+    task_alias: prompt-3
+    include: logiqa.yaml
+    doc_to_text: !function utils_logiqa.doc_to_text_3
+  - task: logiqa-4
+    task_alias: prompt-4
+    include: logiqa.yaml
+    doc_to_text: !function utils_logiqa.doc_to_text_4
