@@ -59,6 +59,11 @@ run_name=${prune_run_name}_ft${max_duration}
 save_dir=${OUTPUT_DIR}/${run_name}
 
 # Run in bash, it will automatically use resources available in the current environment
+nohup python ${PROJ_DIR}/drpruning/callbacks/DRO_server.py \
+    --for_prune False \
+    --max_duration ${max_duration} \
+    > ${save_dir}/DRO_server.log 2>&1 &
+
 composer $TRAIN_SCRIPT \
     $config_file \
     run_name=${run_name} \

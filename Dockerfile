@@ -38,6 +38,7 @@ RUN source /opt/conda/bin/activate && \
     pip install sentencepiece && \
     pip install gradio && \
     pip install scipy && \
+    pip install Flask && \
     pip install -e . && \
     pip install --upgrade pytest && \
     pip install protobuf==3.20.3 && \

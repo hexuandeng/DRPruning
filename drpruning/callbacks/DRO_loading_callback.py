@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import math
 from time import time
 from typing import Any, Dict, List
+import pickle
+import base64
+import requests
 
 def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
     """Expects f an increasing function and return eta in [eta_min, eta_max]
@@ -46,107 +49,6 @@ def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
     print('Maximum number of iterations exceeded in bisection')
     return 0.5 * (eta_min + eta_max)
 
-
-class ScalingLaw(torch.nn.Module):
-    def __init__(self, for_prune=False, save_folder=''):
-        super(ScalingLaw, self).__init__()
-        self.save_folder = save_folder
-        self.device = torch.cuda.current_device()
-        self.loss_func = torch.nn.HuberLoss(reduction='mean', delta=1e-3)
-        self.ranges = [
-            [x * 10 for x in range(3)],
-            [x for x in range(2)],
-            [x / 2 for x in range(3)],
-            # [x / 2 for x in range(2)]
-        ]
-        if for_prune:
-            self.ranges.append([-x / 2 for x in range(2)])
-
-        self.search_size = 1
-        for r in self.ranges:
-            self.search_size *= len(r)
-
-        self.reinit(0)
-
-    def reinit(self, index):
-        indices = self.get_indices(index)
-        self._variables = torch.nn.Parameter(
-            torch.tensor([self.ranges[i][indices[i]] for i in range(len(self.ranges))], 
-                         dtype=torch.float32,
-                         device=self.device),
-            requires_grad=True)
-        self.logA = self._variables[0]
-        self.logE = self._variables[1]
-
-    def get_indices(self, index):
-        indices = []
-        for r in reversed(self.ranges):
-            index, i = divmod(index, len(r))
-            indices.append(i)
-        return indices[::-1]
-
-    def forward(self, x):
-        x = x.to(self.device)
-        exps = torch.sum(self._variables[2: ].unsqueeze(-1) * torch.log(x), dim=0)
-        return torch.exp(self._variables[0] - exps) + torch.exp(self._variables[1])
-
-    def compute_loss(self, inputs, targets):
-        outputs = self.forward(inputs)
-        return self.loss_func(outputs, targets)
-
-    @property
-    def variables(self):
-        variables = self._variables.detach().clone()
-        variables[0] = torch.exp(variables[0])
-        variables[1] = torch.exp(variables[1])
-        return variables.tolist()
-    
-    def optimize_from_init(self, init, input, target, final=False):
-        def closure():
-            self.zero_grad()
-            objective = self.compute_loss(input, target)
-            objective.backward()
-            return objective
-
-        self.reinit(init)
-        optimizer = torch.optim.LBFGS(self.parameters(), lr=1, max_iter=20)
-        step = 25 if final else 10
-        for _ in range(step):
-            loss = optimizer.step(closure)
-        return loss, init
-
-    def optimize(self, input, target, final):
-        input = input.to(self.device)
-        target = target.to(self.device)
-
-        mem = []
-        for init in range(self.search_size):
-            mem.append(self.optimize_from_init(init, input, target, final=False))
-        mem = sorted([(i.item(), j) for i, j in mem if not torch.isnan(i)])
-
-        asws = []
-        for _, init in mem[2::-1]:
-            self.optimize_from_init(init, input, target, final=True)
-            predict = self.forward(final).item()
-            predict = min(predict, torch.min(target).item())
-            predict = max(predict, 0)
-            asw = self.variables + [predict]
-            check = sum([math.isnan(i) for i in asw])
-            if not check:
-                asws.append(self.variables + [predict])
-        
-        asws = [sum([it[i] for it in asws]) / len(asws) for i in range(len(asws[0]))]
-        loss = [i[0] for i in mem[2::-1]]
-        return asws + [sum(loss) / len(loss)]
-    
-    def draw_plt(self, input, target, domain):
-        with torch.no_grad():
-            plt.figure()
-            plt.plot(input[0].cpu().numpy(), target.cpu().numpy(), label='target')
-            plt.plot(input[0].cpu().numpy(), self.forward(input).detach().cpu().numpy(), label='predict')
-            plt.legend()
-            plt.savefig(os.path.join(self.save_folder, f'{domain}.png'), dpi=1000)
-            plt.clf()
 
 class DRPruningCallback(Callback):
     "Callback for DRPrunin of data from different domains."
@@ -196,14 +98,13 @@ class DRPruningCallback(Callback):
         self.count_cat = torch.ones(self.n_domains)
 
         if self.dynamic_baseline:
-            self.scaling_law = ScalingLaw(self.for_prune, self.save_folder)
-            self.scaling_law.train()
             self.used_domain_counts = torch.zeros(self.n_domains)
             self.domain_loss = torch.zeros(self.n_domains)
             self.domain_counts = torch.zeros(self.n_domains)
             self.input_history = [None] * self.n_domains
             self.loss_history = [None] * self.n_domains
             self.finals = {}
+            self.to_get = None
 
     def after_train_batch(self, state: State, logger: Logger) -> None:
         """ Print out the number of used samples in each domain after each training batch, and log the updated proportion of each domain """
@@ -225,11 +126,38 @@ class DRPruningCallback(Callback):
         for domain in self.set_names:
             logger.log_metrics({f'metrics/train/{domain}_weight': round(prop[self.set_names.index(domain)], 4)})
 
+    def before_train_batch(self, state: State, logger: Logger) -> None:
+        """Called on the :attr:`.Event.BEFORE_TRAIN_BATCH` event.
+
+        Args:
+            state (State): The training state.
+            logger (Logger): The logger.
+        """
+        if self.to_get is not None:
+            start = time()
+            print(self.to_get)
+            response = requests.get(f"http://localhost:5000/get_mem?update_steps={self.to_get}")
+            if response.status_code == 200:
+                result = response.json()
+                baselines = result['baselines']
+                for i in range(self.n_domains):
+                    if baselines[i] is None:
+                        continue
+                    if self.target_loss[i] == self._target_loss[i]:
+                        self.target_loss[i] = baselines[i]
+                    else:
+                        self.target_loss[i] = min(self.target_loss[i], baselines[i])
+                
+                print("Target loss:", self.target_loss)
+                if sum(self._target_loss) > 0 or self.update_steps >= state.max_duration.value * 0.1:
+                    self.update_proportion(state)
+                self.to_get = None
+            else:
+                print(f"Step {self.to_get} not ready yet.")
+            print("Time:", time() - start)
+
     def eval_end(self, state: State, logger: Logger) -> None:
         """ Update the proportion of each domain after each evaluation and update the dataset """
-        if self.dynamic_baseline:
-            self.scaling_law.max_duration = state.max_duration.value
-
         if self.use_eval:
             losses = []
             for domain in self.set_names:
@@ -237,7 +165,6 @@ class DRPruningCallback(Callback):
             self.sum_losses = torch.tensor(losses)
         
         if self.dynamic_baseline and self.update_steps >= state.max_duration.value * 0.02:
-            start_time = time()
             if self.use_eval:
                 domain_loss = torch.tensor(losses)
             else:
@@ -247,7 +174,6 @@ class DRPruningCallback(Callback):
                 self.domain_counts.zero_()
 
             # Update Loss and Corresponding Used Data for Each Domain
-            max_count = 0
             for i in range(self.n_domains):
                 if domain_loss[i].ne(0):
                     if self.for_prune:
@@ -258,7 +184,6 @@ class DRPruningCallback(Callback):
                     self.finals[i][0, 0] *= (state.max_duration.value / self.update_steps)
                     if self.for_prune:
                         self.finals[i][-1, 0] = state.outputs['l0_output'][1]['target_sparsity']
-                    max_count = max(max_count, self.finals[i][0, 0])
 
                     loss_history = domain_loss[i].unsqueeze(0)
                     if self.input_history[i] is None:
@@ -278,22 +203,17 @@ class DRPruningCallback(Callback):
                                  self.loss_history[i][random_index+1:]),
                                 dim=0)
 
-            # Update Baseline Loss
-            for i in range(self.n_domains):
-                if self.loss_history[i] is not None and self.loss_history[i].shape[0] > 10 and self.update_steps >= state.max_duration.value * 0.1:
-                    variables = self.scaling_law.optimize(self.input_history[i], self.loss_history[i], self.finals[i])
-                    self.scaling_law.draw_plt(self.input_history[i], self.loss_history[i], self.set_names[i])
-                    baseline = min(variables[-2], self.loss_history[i].min().item())
-                    if self.reference_loss[i] == self._reference_loss[i]:
-                        self.reference_loss[i] = baseline
-                    else:
-                        self.reference_loss[i] = min(self.reference_loss[i], baseline)
-                    print(f"{self.set_names[i]}:", variables)
-            print("Target loss:", self.reference_loss)
-            print("Time:", time() - start_time)
-        
-        if sum(self._reference_loss) > 0 or self.update_steps >= state.max_duration.value * 0.1:
-            self.update_proportion(state)
+            rank = torch.distributed.get_rank() if torch.distributed.is_initialized() else 0
+            if self.update_steps >= state.max_duration.value * 0.1 and rank == 0:
+                data = {
+                    'input_history': base64.b64encode(pickle.dumps(self.input_history)).decode('utf-8'),
+                    'loss_history': base64.b64encode(pickle.dumps(self.loss_history)).decode('utf-8'),
+                    'finals': base64.b64encode(pickle.dumps(self.finals)).decode('utf-8'),
+                    'set_names': base64.b64encode(pickle.dumps(self.set_names)).decode('utf-8'),
+                    'update_steps': self.update_steps,
+                }
+                requests.post('http://localhost:5000/process_domain', json=data)
+                self.to_get = self.update_steps
 
     def update_proportion(self, state: State):
         new_proportion = self.update_mw()

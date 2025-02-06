@@ -70,9 +70,11 @@ run_name=llama2_${from_model}_pruning_${update_type}_to${to_model}_sl${max_seq_l
 save_dir=${OUTPUT_DIR}/${run_name}
 
 # Run in bash, it will automatically use resources available in the current environment
-# composer $TRAIN_SCRIPT \
+nohup python ${PROJ_DIR}/drpruning/callbacks/DRO_server.py \
+    --for_prune True \
+    --max_duration ${max_duration} \
+    > ${save_dir}/DRO_server.log 2>&1 &
 
-# Run with slurm    
 composer $PROJ_DIR/drpruning/train.py \
     $config_file \
     run_name=${run_name} \
