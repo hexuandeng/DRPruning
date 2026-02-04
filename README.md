@@ -192,3 +192,32 @@ For DRO, additional configurations are needed:
 <!-- For the Hugging Face version, the variable names only need to retain the part after the last `.`, i.e., `callbacks.data_loading.update_type` becomes `update_type`. The remaining settings remain consistent. -->
 
 **Note:** The code currently supports only local data, functions with a single worker for the dataloader, and does not offer prefetch support. In our testing, these restrictions do not incur additional computational overhead.
+
+## Citation
+
+If you find this work helpful, please consider citing as follows:
+
+```bibtex
+@inproceedings{deng-etal-2025-drpruning,
+    title = "{DRP}runing: Efficient Large Language Model Pruning through Distributionally Robust Optimization",
+    author = "Deng, Hexuan  and
+      Jiao, Wenxiang  and
+      Liu, Xuebo  and
+      Li, Jing  and
+      Zhang, Min  and
+      Tu, Zhaopeng",
+    editor = "Che, Wanxiang  and
+      Nabende, Joyce  and
+      Shutova, Ekaterina  and
+      Pilehvar, Mohammad Taher",
+    booktitle = "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2025",
+    address = "Vienna, Austria",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.acl-long.1414/",
+    doi = "10.18653/v1/2025.acl-long.1414",
+    pages = "29152--29173",
+    ISBN = "979-8-89176-251-0",
+}
+```
